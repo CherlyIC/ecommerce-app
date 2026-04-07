@@ -9,6 +9,10 @@ import type { Product, Category } from '../types'
 // PRODUCT CARD COMPONENT
 // ===========================
 function ProductCard({ product }: { product: Product }) {
+  // Handle the image url extraction properly if the backend returns array of objects with .url
+  const firstImage = product.images?.[0]
+  const imageUrl = typeof firstImage === 'string' ? firstImage : (firstImage as any)?.url || 'https://placehold.co/400x300?text=No+Image'
+
   return (
     <Link
       to={`/product/${product.id}`}
@@ -17,11 +21,11 @@ function ProductCard({ product }: { product: Product }) {
       {/* IMAGE */}
       <div className="relative overflow-hidden bg-gray-50 h-64 p-4 flex items-center justify-center before:absolute before:inset-0 before:bg-black/0 group-hover:before:bg-black/5 before:transition-colors before:z-10">
         <img
-          src={product.images?.[0] || 'https://placehold.co/400x300?text=No+Image'}
-          alt={product.title}
+          src={imageUrl}
+          alt={(product as any).name || product.title}
           className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-in-out mix-blend-multiply"
           onError={(e) => {
-            ;(e.target as HTMLImageElement).src =
+            ; (e.target as HTMLImageElement).src =
               'https://placehold.co/400x300?text=No+Image'
           }}
         />
@@ -45,10 +49,10 @@ function ProductCard({ product }: { product: Product }) {
           {product.category?.name || 'Uncategorized'}
         </p>
         <h3 className="text-gray-900 font-extrabold text-lg leading-tight mb-2 line-clamp-2 group-hover:text-orange-500 transition-colors">
-          {product.title}
+          {(product as any).name || product.title}
         </h3>
         <p className="text-gray-500 text-sm mb-4 flex-1 line-clamp-2">{product.description}</p>
-        
+
         <div className="flex items-end justify-between mt-auto">
           <div>
             <p className="text-gray-400 text-xs font-medium mb-0.5">{product.brand}</p>
@@ -167,6 +171,7 @@ export default function Home() {
     if (Array.isArray(data)) return data
     if (data && Array.isArray(data[key])) return data[key]
     if (data && Array.isArray(data.data)) return data.data
+    if (data && data.data && Array.isArray(data.data.all)) return data.data.all
     return []
   }
 
@@ -175,11 +180,12 @@ export default function Home() {
 
   const filteredProducts = allProducts.filter((product) => {
     const matchesCategory = selectedCategory
-      ? product.category?.id === selectedCategory
+      ? product.category?.id === selectedCategory || (product as any).categoryId === selectedCategory
       : true
+    const productName = (product as any).name || product.title || ''
     const matchesSearch = searchQuery
-      ? product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchQuery.toLowerCase())
+      ? productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.brand && product.brand.toLowerCase().includes(searchQuery.toLowerCase()))
       : true
     return matchesCategory && matchesSearch
   })
@@ -194,7 +200,7 @@ export default function Home() {
           <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-amber-300/20 rounded-full blur-3xl animation-delay-2000"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 relative z-10 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="max-w-2xl transform transition-all duration-700 hover:scale-[1.02]">
             <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-sm font-semibold tracking-wider uppercase mb-6 shadow-sm">
@@ -209,7 +215,7 @@ export default function Home() {
             <p className="text-white/90 text-xl font-medium mb-10 max-w-lg leading-relaxed mix-blend-screen">
               Discover thousands of premium products at unbeatable prices. Curated just for you.
             </p>
-            
+
             <a
               href="#products"
               className="group relative inline-flex items-center justify-center bg-white text-orange-600 font-bold px-10 py-4 rounded-full overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(234,88,12,0.3)] transition-all duration-300 hover:-translate-y-1"
@@ -328,7 +334,7 @@ export default function Home() {
         )}
       </div>
 
-     {/* FOOTER */}
+      {/* FOOTER */}
       <footer className="bg-white border-t border-gray-100 mt-16 py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -338,7 +344,7 @@ export default function Home() {
             <span className="text-orange-500 font-bold text-lg">ZuriShop</span>
           </div>
           <p className="text-gray-400 text-sm">
-            2024 ZuriShop. All rights reserved.
+            2026 ZuriShop. All rights reserved.
           </p>
           <div className="flex gap-4 text-sm text-gray-400">
             <span>Free Delivery</span>
