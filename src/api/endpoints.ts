@@ -19,7 +19,7 @@ export const getCurrentUser = () =>
 export const getProducts = () =>
   api.get('/api/public/products')
 
-export const getProductById = (id: number) =>
+export const getProductById = (id: number | string) =>
   api.get(`/api/public/products/${id}`)
 
 export const getProductsByCategory = (categoryId: number) =>
@@ -29,10 +29,10 @@ export const getProductsByCategory = (categoryId: number) =>
 export const createProduct = (data: CreateProductInput) =>
   api.post('/api/admin/products', data)
 
-export const updateProduct = (id: number, data: CreateProductInput) =>
+export const updateProduct = (id: number | string, data: CreateProductInput) =>
   api.patch(`/api/admin/products/${id}`, data)
 
-export const deleteProduct = (id: number) =>
+export const deleteProduct = (id: number | string) =>
   api.delete(`/api/admin/products/${id}`)
 
 
@@ -51,7 +51,7 @@ export const deleteCategory = (id: number) =>
 export const getCart = () =>
   api.get('/api/auth/cart')
 
-export const addToCart = (productId: number, quantity: number) =>
+export const addToCart = (productId: number | string, quantity: number) =>
   api.post('/api/auth/cart/items', { productId, quantity })
 
 export const updateCartItem = (itemId: number, quantity: number) =>

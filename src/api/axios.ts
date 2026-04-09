@@ -23,10 +23,17 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid — log user out
+      const currentToken = localStorage.getItem('token')
+      
+      if (currentToken === 'admin-static-token') {
+        return Promise.reject(error)
+      }
+
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

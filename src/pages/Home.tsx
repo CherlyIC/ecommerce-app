@@ -5,11 +5,7 @@ import toast from 'react-hot-toast'
 import { getProducts, getCategories } from '../api/endpoints'
 import type { Product, Category } from '../types'
 
-// ===========================
-// PRODUCT CARD COMPONENT
-// ===========================
 function ProductCard({ product }: { product: Product }) {
-  // Handle the image url extraction properly if the backend returns array of objects with .url
   const firstImage = product.images?.[0]
   const imageUrl = typeof firstImage === 'string' ? firstImage : (firstImage as any)?.url || 'https://placehold.co/400x300?text=No+Image'
 
@@ -18,7 +14,6 @@ function ProductCard({ product }: { product: Product }) {
       to={`/product/${product.id}`}
       className="bg-white rounded-3xl shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 overflow-hidden group border border-gray-100 flex flex-col h-full hover:-translate-y-1"
     >
-      {/* IMAGE */}
       <div className="relative overflow-hidden bg-gray-50 h-64 p-4 flex items-center justify-center before:absolute before:inset-0 before:bg-black/0 group-hover:before:bg-black/5 before:transition-colors before:z-10">
         <img
           src={imageUrl}
@@ -42,7 +37,6 @@ function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      {/* DETAILS */}
       <div className="p-6 flex flex-col flex-1">
         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5">
           <span className="w-4 border-t border-gray-300 inline-block"></span>
@@ -69,9 +63,6 @@ function ProductCard({ product }: { product: Product }) {
   )
 }
 
-// ===========================
-// SKELETON LOADER
-// ===========================
 function ProductSkeleton() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
@@ -89,9 +80,6 @@ function ProductSkeleton() {
   )
 }
 
-// ===========================
-// ERROR STATE
-// ===========================
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
@@ -108,9 +96,6 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   )
 }
 
-// ===========================
-// EMPTY STATE
-// ===========================
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-32 px-4 text-center bg-white rounded-3xl border border-gray-100 shadow-sm col-span-full">
@@ -123,14 +108,10 @@ function EmptyState() {
   )
 }
 
-// ===========================
-// HOME PAGE
-// ===========================
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
-  // FETCH PRODUCTS
   const {
     data: productsData,
     isLoading: productsLoading,
@@ -151,7 +132,6 @@ export default function Home() {
     staleTime: 5 * 60 * 1000,
   })
 
-  // FETCH CATEGORIES
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -166,7 +146,6 @@ export default function Home() {
     staleTime: 10 * 60 * 1000,
   })
 
-  // FILTER PRODUCTS
   const extractData = (data: any, key: string) => {
     if (Array.isArray(data)) return data
     if (data && Array.isArray(data[key])) return data[key]
@@ -192,9 +171,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] selection:bg-orange-200">
-      {/* HERO SECTION */}
       <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-orange-500 to-amber-500 text-white min-h-[400px] flex flex-col justify-center">
-        {/* Floating background shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-amber-300/20 rounded-full blur-3xl animation-delay-2000"></div>
@@ -236,7 +213,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* SEARCH BAR */}
       <div className="max-w-4xl mx-auto px-4 -mt-10 relative z-20">
         <div className="bg-white/80 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/50 p-3 flex items-center gap-4 transition-all duration-300 focus-within:shadow-[0_8px_30px_rgb(234,88,12,0.15)] focus-within:bg-white">
           <div className="bg-orange-100 p-3 rounded-full text-orange-500">
@@ -261,10 +237,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <div id="products" className="max-w-7xl mx-auto px-4 py-10">
 
-        {/* CATEGORIES FILTER */}
         {categories.length > 0 && (
           <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-10 scrollbar-hide snap-x">
             <button
@@ -293,7 +267,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* RESULTS COUNT */}
         {!productsLoading && !productsError && (
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
             <h2 className="text-gray-800 font-bold text-xl flex items-center gap-2">
@@ -308,7 +281,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* LOADING */}
         {productsLoading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -317,10 +289,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* ERROR */}
-        {productsError && <ErrorState onRetry={refetchProducts} />}
-
-        {/* PRODUCTS GRID */}
         {!productsLoading && !productsError && (
           filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -334,7 +302,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* FOOTER */}
       <footer className="bg-white border-t border-gray-100 mt-16 py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">

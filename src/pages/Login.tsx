@@ -92,10 +92,11 @@ export default function Login() {
         return
       }
       const response = await loginUser(data)
-      const { token, user } = response.data
+      const payload = response.data?.data || response.data
+      const { token, user } = payload
 
       login(token, user)
-      toast.success(`Welcome back, ${user.name}! `)
+      toast.success(`Welcome back, ${user?.name || 'User'}! `)
       navigate('/')
 
     } catch (error: unknown) {
@@ -188,7 +189,6 @@ export default function Login() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
 
-          {/* TABS */}
           <div className="flex bg-orange-50 rounded-xl p-1 mb-6">
             <button
               onClick={() => setIsLoginMode(true)}

@@ -7,6 +7,7 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Dashboard from './pages/admin/Dashboard'
 import ProductForm from './pages/admin/ProductForm'
+import ProductDetail from './pages/ProductDetail'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
 
           <Route path="/cart" element={
             <UserRoute><Cart /></UserRoute>

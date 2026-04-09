@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 import { getCart, placeOrder } from '../api/endpoints'
 import type { Cart as CartType, CreateOrderInput } from '../types'
 
-// ZOD Validation Schema per strict requirements
 const checkoutSchema = z.object({
   fullName: z.string().min(1, 'Full Name is required'),
   address: z.string().min(1, 'Shipping Address is required'),
@@ -32,16 +31,13 @@ export default function Checkout() {
     }
   })
 
-  // Mutations
   const orderMutation = useMutation({
     mutationFn: (data: CreateOrderInput) => placeOrder(data),
     onSuccess: () => {
-      // Clear cart on backend internally or call clearCart() manually depending on API
-      // Assignment expects complete flow, let's also clear cart logic if needed
       queryClient.invalidateQueries({ queryKey: ['cart'] })
       queryClient.invalidateQueries({ queryKey: ['orders'] })
       toast.success('🎉 Order placed successfully!')
-      navigate('/profile') // Or navigate to a success page
+      navigate('/profile')
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || 'Failed to place order')
@@ -84,7 +80,6 @@ export default function Checkout() {
     <div className="min-h-screen bg-[#FDFDFD] py-12 px-4">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12">
         
-        {/* CHECKOUT FORM */}
         <div className="flex-1">
           <div className="mb-10">
             <h1 className="text-4xl font-black text-gray-900 mb-2">Secure Checkout</h1>
@@ -92,7 +87,6 @@ export default function Checkout() {
           </div>
 
           <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-            {/* STEP 1: CONTACT INFO */}
             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span className="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
@@ -130,7 +124,6 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* STEP 2: SHIPPING INFO */}
             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span className="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
@@ -167,7 +160,6 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* STEP 3: PAYMENT METHOD */}
             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span className="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span>
@@ -197,7 +189,6 @@ export default function Checkout() {
           </form>
         </div>
 
-        {/* ORDER REVIEW & SUMMARY */}
         <div className="w-full lg:w-[400px] shrink-0">
           <div className="bg-white rounded-[3rem] p-8 lg:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.05)] border border-gray-100/50 sticky top-8">
             <h2 className="text-2xl font-black text-gray-900 mb-6 pb-6 border-b border-gray-100">Review Order</h2>
