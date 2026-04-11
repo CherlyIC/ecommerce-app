@@ -51,8 +51,8 @@ export const deleteCategory = (id: number) =>
 export const getCart = () =>
   api.get('/api/auth/cart')
 
-export const addToCart = (productId: number | string, quantity: number) =>
-  api.post('/api/auth/cart/items', { productId, quantity })
+export const addToCart = (productId: number | string, quantity: number, variantId?: number | string | null) =>
+  api.post('/api/auth/cart/items', { productId, quantity, variantId })
 
 export const updateCartItem = (itemId: number, quantity: number) =>
   api.patch(`/api/auth/cart/items/${itemId}`, { quantity })

@@ -23,13 +23,20 @@ export default function ProductDetail() {
   })
 
   const cartMut = useMutation({
-    mutationFn: () => addToCart(id as string, quantity),
+    mutationFn: () => {
+      // Check if product has variants and use the first one, otherwise pass null
+      const variantId = product?.variants?.length > 0 ? product.variants[0].id : null
+      console.log('Using variantId:', variantId)
+      return addToCart(id!, quantity, variantId)
+    },
     onSuccess: () => {
       toast.success('Added to cart!')
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
-    onError: () => {
-      toast.error('Failed to add to cart. Please try again.')
+    onError: (error: any) => {
+      console.error('Add to cart error:', error)
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to add to cart. Please try again.'
+      toast.error(errorMessage)
     }
   })
 
@@ -49,6 +56,9 @@ export default function ProductDetail() {
   const productRaw = productData?.data?.product || productData?.product || productData?.data || productData
   const product = productRaw as any
   
+  console.log('Product data:', product) // Debug: check product structure
+  console.log('Product variants:', product?.variants) // Debug: check if variants exist
+  
   const firstImage = product?.images?.[0]
   const imageUrl = typeof firstImage === 'string' ? firstImage : firstImage?.url || 'https://placehold.co/800x600?text=No+Image'
 
@@ -58,6 +68,27 @@ export default function ProductDetail() {
       navigate('/login')
       return
     }
+    
+    if (!id) {
+      toast.error('Product ID is missing')
+      return
+    }
+    
+    if (quantity <= 0) {
+      toast.error('Please select a valid quantity')
+      return
+    }
+    
+    if (!product || !product.id) {
+      toast.error('Product data is not available')
+      return
+    }
+    
+    if (quantity > product.stock) {
+      toast.error(`Only ${product.stock} items available in stock`)
+      return
+    }
+    
     cartMut.mutate()
   }
 
